@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:omnath_agritech_web/constants.dart';
 import 'dart:async';
 import 'package:provider/provider.dart';
 import '../providers/tabs_provider.dart';
@@ -56,6 +57,13 @@ class _SideMenuState extends State<SideMenu> {
               provider.switchtabs(0);
             },
           ),
+           DrawerListTile(
+            title: "Stock",
+            svgSrc: "assets/icons/menu_store.svg",
+            press: () {
+              provider.switchtabs(1);
+            },
+          ),
           DrawerListTile(
             title: "Transaction",
             svgSrc: "assets/icons/menu_tran.svg",
@@ -91,13 +99,7 @@ class _SideMenuState extends State<SideMenu> {
             svgSrc: "assets/icons/menu_setting.svg",
             press: () {},
           ),
-          DrawerListTile(
-            title: "Stock",
-            svgSrc: "assets/icons/menu_store.svg",
-            press: () {
-              provider.switchtabs(1);
-            },
-          ),
+         
         ],
       ),
     );
@@ -118,17 +120,22 @@ class DrawerListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      onTap: press,
-      horizontalTitleGap: 0.0,
-      leading: SvgPicture.asset(
-        svgSrc,
-        color: Colors.white54,
-        height: 16,
-      ),
-      title: Text(
-        title,
-        style: TextStyle(color: Colors.white54),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: ListTile(
+        
+        onTap: press,
+        
+        horizontalTitleGap: 0.0,
+        leading: SvgPicture.asset(
+          svgSrc,
+          color: Colors.white,
+          height: 16,
+        ),
+        title: Text(
+          title,
+          style: TextStyle(color:blue),
+        ),
       ),
     );
   }
