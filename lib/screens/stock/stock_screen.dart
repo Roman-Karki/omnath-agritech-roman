@@ -1,6 +1,8 @@
 import 'package:omnath_agritech_web/responsive.dart';
 import 'package:flutter/material.dart';
 import '../../constants.dart';
+import 'package:provider/provider.dart';
+import '../../screens/main/providers/tabs_provider.dart';
 import 'components/header.dart';
 import 'components/add_product.dart';
 import 'components/products.dart';
@@ -25,8 +27,15 @@ class _StockScreenState extends State<StockScreen> {
     });
   }
 
+  void changeShow(value) {
+    setState(() {
+      _show = value;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    var provider = Provider.of<TabsProvider>(context);
     return SafeArea(
       child: SingleChildScrollView(
         primary: false,
@@ -45,12 +54,12 @@ class _StockScreenState extends State<StockScreen> {
                 ),
               ),
               onPressed: () {
-                show();
+                provider.change();
               },
-              icon: _show
+              icon: provider.show
                   ? const Icon(Icons.arrow_back_sharp)
                   : const Icon(Icons.add),
-              label: _show
+              label: provider.show
                   ? const Text("Show Product")
                   : const Text("Add Product"),
             ),
@@ -66,11 +75,11 @@ class _StockScreenState extends State<StockScreen> {
                       SizedBox(height: defaultPadding),
                       // AddProduct(),
                       Visibility(
-                        visible: !_show,
+                        visible: !provider.show,
                         child: Products(),
                       ),
                       Visibility(
-                        visible: _show,
+                        visible: provider.show,
                         child: AddProduct(),
                       ),
                       if (Responsive.isMobile(context))

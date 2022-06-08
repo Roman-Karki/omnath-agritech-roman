@@ -47,7 +47,6 @@ dependencies:
   toggle_switch: ^2.0.1
   image_picker: ^0.8.5+3
   uuid: ^3.0.4
-  paginate_firestore: ^1.0.3+1
   optimized_cached_image: ^3.0.0
 
 

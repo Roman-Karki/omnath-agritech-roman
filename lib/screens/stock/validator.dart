@@ -20,6 +20,7 @@ class ValidationItem {
 }
 
 class ProductValidation with ChangeNotifier {
+  ValidationItem _docId = ValidationItem(null, null);
   ValidationItem _nameEN = ValidationItem(null, null);
   ValidationItem _nameHN = ValidationItem(null, null);
   ValidationItem _desEN = ValidationItem(null, null);
@@ -37,6 +38,7 @@ class ProductValidation with ChangeNotifier {
   ValidationItem _displayOffer = ValidationItem(null, null);
 
 //Getters
+  ValidationItem get docId => _docId;
   ValidationItem get nameEN => _nameEN;
   ValidationItem get nameHN => _nameHN;
   ValidationItem get desEN => _desEN;
@@ -87,6 +89,11 @@ class ProductValidation with ChangeNotifier {
   }
 
 //Setters
+  void changeDocId(String value) {
+    _nameEN = ValidationItem(value, null);
+    notifyListeners();
+  }
+
   void changenameEN(String value) {
     if (value.length >= 3) {
       _nameEN = ValidationItem(value, null);
@@ -278,9 +285,55 @@ class ProductValidation with ChangeNotifier {
     return;
   }
 
+  void changeForm(
+      String id,
+      String value1,
+      String value2,
+      String value3,
+      String value4,
+      String value5,
+      String value6,
+      String value7,
+      String value8,
+      String value9,
+      String value10) {
+    _docId = ValidationItem(id, null);
+    _nameEN = ValidationItem(value1, null);
+    _nameHN = ValidationItem(value2, null);
+    _desEN = ValidationItem(value3, null);
+    _desHN = ValidationItem(value4, null);
+    _productCategory = ValidationItem(value5.toString(), null);
+    _status = ValidationItem(value6.toString(), null);
+    _company = ValidationItem(value7, null);
+    _gst = ValidationItem(value8, null);
+    _searchKey = ValidationItem(value9, null);
+    _displayOffer = ValidationItem(value10, null);
+
+    notifyListeners();
+  }
+
+  Future<void> update() async {
+    CollectionReference product =
+        FirebaseFirestore.instance.collection('Product');
+
+    product.doc('${_docId.value}').update({
+      'nameEN': nameEN.value,
+      'nameHN': nameHN.value,
+      'desEN': desEN.value,
+      'desHN': desHN.value,
+      'productCategory': productCategory.value,
+      'status': status.value,
+      'company': company.value,
+      'gst': gst.value,
+      'searchKey': searchKey.value,
+      'displayOffer': displayOffer.value,
+      'options': map,
+      'images': downloadUrl,
+    });
+    return;
+  }
+
   void submitData() {
-    userSetup();
-    print(
-        "Name: ${nameEN.value}, nameHN: ${nameHN.value}, quantity: ${quantity.value}, productCategory Code: ${productCategory.value} , price Number: ${price.value}");
+    _docId.value == null ? userSetup() : update();
   }
 }

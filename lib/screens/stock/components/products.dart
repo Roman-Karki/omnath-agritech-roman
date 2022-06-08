@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import '../../../constants.dart';
+import '../validator.dart';
+import 'package:provider/provider.dart';
 import 'package:omnath_agritech_web/responsive.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../stock_screen.dart';
+import '../../main/providers/tabs_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:paginate_firestore/paginate_firestore.dart';
 import 'package:optimized_cached_image/optimized_cached_image.dart';
@@ -142,6 +145,9 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final validationService =
+        Provider.of<ProductValidation>(context, listen: false);
+    var provider = Provider.of<TabsProvider>(context);
     Size size = MediaQuery.of(context).size;
     return Padding(
       padding: EdgeInsets.symmetric(
@@ -150,7 +156,19 @@ class ProductCard extends StatelessWidget {
       ),
       child: GestureDetector(
         onTap: () {
-          //TODO: change visibility along with provider
+          validationService.changeForm(
+              '${data.reference.documentID}',
+              '${data['nameEN']}',
+              '${data['nameHN']}',
+              '${data['desEN']}',
+              '${data['desHN']}',
+              '${data['productCategory']}',
+              '${data['status']}',
+              '${data['company']}',
+              '${data['gst']}',
+              '${data['searchKey']}',
+              '${data['displayOffer']}');
+          provider.change();
         },
         child: Container(
           decoration: BoxDecoration(
@@ -166,16 +184,6 @@ class ProductCard extends StatelessWidget {
                 Expanded(
                   child: Column(
                     children: [
-                      // Center(
-                      //   child: OptimizedCacheImage(
-                      //     imageUrl: "${firstImage()}",
-
-                      //     errorWidget: (context, url, error) => Icon(Icons.error),
-                      //   ),
-                      // ),
-                      // SizedBox(
-                      //   height: size.height * 0.03,
-                      // ),
                       Text(
                         data['nameEN'],
                         style: TextStyle(fontSize: 22, color: Colors.black),
@@ -188,81 +196,6 @@ class ProductCard extends StatelessWidget {
                         data['productCategory'],
                         style: TextStyle(fontSize: 15, color: Colors.black),
                       ),
-                      // Container(
-                      //   height: size.height * 0.028,
-                      //   width: size.width * 0.08,
-                      //   decoration: BoxDecoration(
-                      //       borderRadius: BorderRadius.all(Radius.circular(4)),
-                      //       color: Colors.blue.shade900),
-                      //   child: AutoText(
-                      //     height: size.height * 0.01,
-                      //     width: size.width * 0.06,
-                      //     text: '-10%',
-                      //     style: TextStyle(
-                      //       fontSize: 18,
-                      //       color: Colors.white.withOpacity(0.5),
-                      //       fontWeight: FontWeight.bold,
-                      //     ),
-                      //     maxline: 1,
-                      //     showcolor: Colors.transparent,
-                      //     centered: true,
-                      //   ),
-                      // ),
-                      // AutoText(
-                      //   height: size.height * 0.03,
-                      //   width: size.width * 0.28,
-                      //   text: 'Fertilizer, 25kg',
-                      //   style: TextStyle(
-                      //     fontSize: 18,
-                      //     color: Colors.black.withOpacity(0.5),
-                      //     fontWeight: FontWeight.w600,
-                      //   ),
-                      //   maxline: 1,
-                      //   showcolor: Colors.transparent,
-                      //   centered: false,
-                      // ),
-                      // AutoText(
-                      //   height: size.height * 0.04,
-                      //   width: size.width * 0.28,
-                      //   text: '₹2000',
-                      //   style: TextStyle(
-                      //     fontSize: 18,
-                      //     color: Colors.blue.shade800,
-                      //     fontWeight: FontWeight.w600,
-                      //   ),
-                      //   maxline: 1,
-                      //   showcolor: Colors.transparent,
-                      //   centered: false,
-                      // ),
-                      // Align(
-                      //   alignment: Alignment.bottomCenter,
-                      //   child: Button(
-                      //     height: size.height * 0.04,
-                      //     width: size.width * 0.5,
-                      //     child: AutoText(
-                      //       height: size.height * 0.03,
-                      //       width: size.width * 0.28,
-                      //       text: '${provider.addtocart}',
-                      //       style: TextStyle(
-                      //         fontSize: 18,
-                      //         color: Colors.white.withOpacity(0.9),
-                      //         fontWeight: FontWeight.w600,
-                      //       ),
-                      //       maxline: 1,
-                      //       showcolor: Colors.transparent,
-                      //       centered: true,
-                      //     ),
-                      //     outline: false,
-                      //     onpressed: () {
-                      //       Navigation().basicNavigation(
-                      //         Product(
-                      //           data: data,
-                      //         ),
-                      //         context,
-                      //       );
-                      //     },
-                      //   ),
-                      // ),
                     ],
                   ),
                 ),
@@ -270,8 +203,7 @@ class ProductCard extends StatelessWidget {
                   child: Column(
                     children: [
                       Container(
-                        height: 100,
-                        width: 100,
+                        height: 200,
                         child: OptimizedCacheImage(
                           imageUrl: "${firstImage()}",
                           placeholder: (context, url) =>
