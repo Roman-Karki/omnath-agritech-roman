@@ -80,7 +80,9 @@ class _ProductsState extends State<Products> {
                   data: data,
                 );
               },
-              query: FirebaseFirestore.instance.collection('Product').orderBy('nameEN'),
+              query: FirebaseFirestore.instance
+                  .collection('Product')
+                  .orderBy('nameEN'),
               itemBuilderType: PaginateBuilderType.gridView,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
@@ -133,7 +135,7 @@ class ProductCard extends StatelessWidget {
   final data;
   firstImage() {
     List images = data['images'];
-    return images.first;
+    return images.first.toString();
   }
 
   @override
@@ -249,10 +251,12 @@ class ProductCard extends StatelessWidget {
                     // ),
                   ],
                 ),
-                Column(
-                  children: [
-                    Image.network(firstImage()),
-                  ],
+                Container(
+                  height: 100,
+                  width: 100,
+                  child: Image.network(
+                    firstImage(),
+                  ),
                 )
               ],
             ),
