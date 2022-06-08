@@ -5,10 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../stock_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:paginate_firestore/paginate_firestore.dart';
-<<<<<<< HEAD
 import 'package:optimized_cached_image/optimized_cached_image.dart';
-=======
->>>>>>> 2832abacebd460dd2fc48537d7928eb92c054c47
 
 class Products extends StatefulWidget {
   @override
@@ -75,11 +72,7 @@ class _ProductsState extends State<Products> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: Container(
-<<<<<<< HEAD
             height: size.height * 0.25,
-=======
-            height: size.height * 0.85,
->>>>>>> 2832abacebd460dd2fc48537d7928eb92c054c47
             child: PaginateFirestore(
               physics: NeverScrollableScrollPhysics(),
               itemBuilder: (context, documentSnapshots, index) {
@@ -94,11 +87,7 @@ class _ProductsState extends State<Products> {
               itemBuilderType: PaginateBuilderType.gridView,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
-<<<<<<< HEAD
                 childAspectRatio: (size.width * 0.5 / size.height * 0.25),
-=======
-                childAspectRatio: (size.width * 0.5 / size.height * 0.5),
->>>>>>> 2832abacebd460dd2fc48537d7928eb92c054c47
               ),
               isLive: true,
             ),
@@ -147,10 +136,7 @@ class ProductCard extends StatelessWidget {
   final data;
   firstImage() {
     List images = data['images'];
-<<<<<<< HEAD
     // print(images.first.toString());
-=======
->>>>>>> 2832abacebd460dd2fc48537d7928eb92c054c47
     return images.first.toString();
   }
 
@@ -163,7 +149,9 @@ class ProductCard extends StatelessWidget {
         vertical: size.height * 0.01,
       ),
       child: GestureDetector(
-        onTap: () {},
+        onTap: () {
+          //TODO: change visibility along with provider
+        },
         child: Container(
           decoration: BoxDecoration(
               borderRadius: BorderRadius.all(Radius.circular(6)),
@@ -175,7 +163,6 @@ class ProductCard extends StatelessWidget {
             ),
             child: Row(
               children: [
-<<<<<<< HEAD
                 Expanded(
                   child: Column(
                     children: [
@@ -296,105 +283,6 @@ class ProductCard extends StatelessWidget {
                         ),
                       )
                     ],
-=======
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Center(
-                    //   child: OptimizedCacheImage(
-                    //     imageUrl: "${firstImage()}",
-
-                    //     errorWidget: (context, url, error) => Icon(Icons.error),
-                    //   ),
-                    // ),
-                    // SizedBox(
-                    //   height: size.height * 0.03,
-                    // ),
-                    Text(data['nameEN']),
-                    // Container(
-                    //   height: size.height * 0.028,
-                    //   width: size.width * 0.08,
-                    //   decoration: BoxDecoration(
-                    //       borderRadius: BorderRadius.all(Radius.circular(4)),
-                    //       color: Colors.blue.shade900),
-                    //   child: AutoText(
-                    //     height: size.height * 0.01,
-                    //     width: size.width * 0.06,
-                    //     text: '-10%',
-                    //     style: TextStyle(
-                    //       fontSize: 18,
-                    //       color: Colors.white.withOpacity(0.5),
-                    //       fontWeight: FontWeight.bold,
-                    //     ),
-                    //     maxline: 1,
-                    //     showcolor: Colors.transparent,
-                    //     centered: true,
-                    //   ),
-                    // ),
-                    // AutoText(
-                    //   height: size.height * 0.03,
-                    //   width: size.width * 0.28,
-                    //   text: 'Fertilizer, 25kg',
-                    //   style: TextStyle(
-                    //     fontSize: 18,
-                    //     color: Colors.black.withOpacity(0.5),
-                    //     fontWeight: FontWeight.w600,
-                    //   ),
-                    //   maxline: 1,
-                    //   showcolor: Colors.transparent,
-                    //   centered: false,
-                    // ),
-                    // AutoText(
-                    //   height: size.height * 0.04,
-                    //   width: size.width * 0.28,
-                    //   text: '₹2000',
-                    //   style: TextStyle(
-                    //     fontSize: 18,
-                    //     color: Colors.blue.shade800,
-                    //     fontWeight: FontWeight.w600,
-                    //   ),
-                    //   maxline: 1,
-                    //   showcolor: Colors.transparent,
-                    //   centered: false,
-                    // ),
-                    // Align(
-                    //   alignment: Alignment.bottomCenter,
-                    //   child: Button(
-                    //     height: size.height * 0.04,
-                    //     width: size.width * 0.5,
-                    //     child: AutoText(
-                    //       height: size.height * 0.03,
-                    //       width: size.width * 0.28,
-                    //       text: '${provider.addtocart}',
-                    //       style: TextStyle(
-                    //         fontSize: 18,
-                    //         color: Colors.white.withOpacity(0.9),
-                    //         fontWeight: FontWeight.w600,
-                    //       ),
-                    //       maxline: 1,
-                    //       showcolor: Colors.transparent,
-                    //       centered: true,
-                    //     ),
-                    //     outline: false,
-                    //     onpressed: () {
-                    //       Navigation().basicNavigation(
-                    //         Product(
-                    //           data: data,
-                    //         ),
-                    //         context,
-                    //       );
-                    //     },
-                    //   ),
-                    // ),
-                  ],
-                ),
-                Container(
-                  height: 100,
-                  width: 100,
-                  child: Image.network(
-                    firstImage(),
->>>>>>> 2832abacebd460dd2fc48537d7928eb92c054c47
                   ),
                 )
               ],
