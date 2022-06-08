@@ -51,55 +51,54 @@ class _SideMenuState extends State<SideMenu> {
             // ),
           ),
           DrawerListTile(
-            title: "Dashboard",
-            svgSrc: "assets/icons/menu_dashbord.svg",
+            title: "Stock",
+            svgSrc: "assets/icons/menu_store.svg",
             press: () {
               provider.switchtabs(0);
             },
           ),
-           DrawerListTile(
-            title: "Stock",
-            svgSrc: "assets/icons/menu_store.svg",
-            press: () {
-              provider.switchtabs(1);
-            },
-          ),
-          DrawerListTile(
-            title: "Transaction",
-            svgSrc: "assets/icons/menu_tran.svg",
-            press: () {},
-          ),
-          DrawerListTile(
-            title: "Task",
-            svgSrc: "assets/icons/menu_task.svg",
-            press: () {},
-          ),
-          DrawerListTile(
-            title: "Documents",
-            svgSrc: "assets/icons/menu_doc.svg",
-            press: () {},
-          ),
-          DrawerListTile(
-            title: "Store",
-            svgSrc: "assets/icons/menu_store.svg",
-            press: () {},
-          ),
-          DrawerListTile(
-            title: "Notification",
-            svgSrc: "assets/icons/menu_notification.svg",
-            press: () {},
-          ),
-          DrawerListTile(
-            title: "Profile",
-            svgSrc: "assets/icons/menu_profile.svg",
-            press: () {},
-          ),
+          // DrawerListTile(
+          //   title: "Dashboard",
+          //   svgSrc: "assets/icons/menu_dashbord.svg",
+          //   press: () {
+          //     provider.switchtabs(1);
+          //   },
+          // ),
+          // DrawerListTile(
+          //   title: "Transaction",
+          //   svgSrc: "assets/icons/menu_tran.svg",
+          //   press: () {},
+          // ),
+          // DrawerListTile(
+          //   title: "Task",
+          //   svgSrc: "assets/icons/menu_task.svg",
+          //   press: () {},
+          // ),
+          // DrawerListTile(
+          //   title: "Documents",
+          //   svgSrc: "assets/icons/menu_doc.svg",
+          //   press: () {},
+          // ),
+          // DrawerListTile(
+          //   title: "Store",
+          //   svgSrc: "assets/icons/menu_store.svg",
+          //   press: () {},
+          // ),
+          // DrawerListTile(
+          //   title: "Notification",
+          //   svgSrc: "assets/icons/menu_notification.svg",
+          //   press: () {},
+          // ),
+          // DrawerListTile(
+          //   title: "Profile",
+          //   svgSrc: "assets/icons/menu_profile.svg",
+          //   press: () {},
+          // ),
           DrawerListTile(
             title: "Settings",
             svgSrc: "assets/icons/menu_setting.svg",
             press: () {},
           ),
-         
         ],
       ),
     );
@@ -123,18 +122,16 @@ class DrawerListTile extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: ListTile(
-        
         onTap: press,
-        
         horizontalTitleGap: 0.0,
         leading: SvgPicture.asset(
           svgSrc,
-          color: Colors.white,
+          color: Colors.black,
           height: 16,
         ),
         title: Text(
           title,
-          style: TextStyle(color:blue),
+          style: TextStyle(color: blue),
         ),
       ),
     );

@@ -18,8 +18,9 @@ class _MainScreenState extends State<MainScreen> {
   indexclass ind = indexclass();
 
   final tabs = [
-    DashboardScreen(),
     StockScreen(),
+
+    DashboardScreen(),
   ];
 
   @override
