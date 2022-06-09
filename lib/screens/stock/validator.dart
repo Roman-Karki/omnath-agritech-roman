@@ -90,7 +90,7 @@ class ProductValidation with ChangeNotifier {
 
 //Setters
   void changeDocId(String value) {
-    _nameEN = ValidationItem(value, null);
+    _docId = ValidationItem(value, null);
     notifyListeners();
   }
 
@@ -302,8 +302,8 @@ class ProductValidation with ChangeNotifier {
     _nameHN = ValidationItem(value2, null);
     _desEN = ValidationItem(value3, null);
     _desHN = ValidationItem(value4, null);
-    _productCategory = ValidationItem(value5.toString(), null);
-    _status = ValidationItem(value6.toString(), null);
+    _productCategory = ValidationItem(value5, null);
+    _status = ValidationItem(value6, null);
     _company = ValidationItem(value7, null);
     _gst = ValidationItem(value8, null);
     _searchKey = ValidationItem(value9, null);

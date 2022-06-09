@@ -4,15 +4,15 @@ import '../../constants.dart';
 import 'package:provider/provider.dart';
 import '../../screens/main/providers/tabs_provider.dart';
 import 'components/header.dart';
-
+import 'components/update_product.dart';
 import 'components/products.dart';
 
-class StockScreen extends StatefulWidget {
+class UpdateStock extends StatefulWidget {
   @override
-  State<StockScreen> createState() => _StockScreenState();
+  State<UpdateStock> createState() => _UpdateStockState();
 }
 
-class _StockScreenState extends State<StockScreen> {
+class _UpdateStockState extends State<UpdateStock> {
   @override
   Widget build(BuildContext context) {
     var provider = Provider.of<TabsProvider>(context);
@@ -34,10 +34,10 @@ class _StockScreenState extends State<StockScreen> {
                 ),
               ),
               onPressed: () {
-                provider.switchtabs(1);
+                provider.switchtabs(0);
               },
-              icon: const Icon(Icons.add),
-              label: const Text("Add Product"),
+              icon: const Icon(Icons.keyboard_backspace_sharp),
+              label: const Text("Show Product"),
             ),
             SizedBox(height: defaultPadding),
             Row(
@@ -50,7 +50,7 @@ class _StockScreenState extends State<StockScreen> {
                       // MyFiles(),
                       SizedBox(height: defaultPadding),
                       // AddProduct(),
-                      Products(),
+                      UpdateProduct(),
 
                       // Visibility(
                       //   visible: provider.show,

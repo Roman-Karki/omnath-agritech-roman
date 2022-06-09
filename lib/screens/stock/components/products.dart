@@ -157,18 +157,18 @@ class ProductCard extends StatelessWidget {
       child: GestureDetector(
         onTap: () {
           validationService.changeForm(
-              '${data.reference.documentID}',
-              '${data['nameEN']}',
-              '${data['nameHN']}',
-              '${data['desEN']}',
-              '${data['desHN']}',
-              '${data['productCategory']}',
-              '${data['status']}',
-              '${data['company']}',
-              '${data['gst']}',
-              '${data['searchKey']}',
-              '${data['displayOffer']}');
-          provider.change();
+              'data.reference.documentID}',
+              data['nameEN'],
+              data['nameHN'],
+              data['desEN'],
+              data['desHN'],
+              data['productCategory'],
+              data['status'],
+              data['company'],
+              data['gst'],
+              data['searchKey'],
+              data['displayOffer']);
+          provider.switchtabs(2);
         },
         child: Container(
           decoration: BoxDecoration(
