@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:firebase_core/firebase_core.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:omnath_agritech_web/constants.dart';
 import 'dart:async';
 import 'package:provider/provider.dart';
@@ -19,8 +19,8 @@ class SideMenu extends StatefulWidget {
 }
 
 class _SideMenuState extends State<SideMenu> {
-  final Stream<QuerySnapshot> title =
-      FirebaseFirestore.instance.collection('title').snapshots();
+  // final Stream<QuerySnapshot> title =
+  //     FirebaseFirestore.instance.collection('title').snapshots();
 
   @override
   Widget build(BuildContext context) {
@@ -97,7 +97,9 @@ class _SideMenuState extends State<SideMenu> {
           DrawerListTile(
             title: "Settings",
             svgSrc: "assets/icons/menu_setting.svg",
-            press: () {},
+            press: () {
+              provider.switchtabs(2);
+            },
           ),
         ],
       ),

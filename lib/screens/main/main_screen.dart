@@ -2,6 +2,7 @@ import 'package:omnath_agritech_web/controllers/MenuController.dart';
 import 'package:omnath_agritech_web/responsive.dart';
 import 'package:omnath_agritech_web/screens/dashboard/dashboard_screen.dart';
 import 'package:omnath_agritech_web/screens/stock/stock_screen.dart';
+import 'package:omnath_agritech_web/screens/stock/add_stock.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import './providers/tabs_provider.dart';
@@ -17,11 +18,7 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   indexclass ind = indexclass();
 
-  final tabs = [
-    StockScreen(),
-
-    DashboardScreen(),
-  ];
+  final tabs = [StockScreen(), AddStock(), DashboardScreen()];
 
   @override
   Widget build(BuildContext context) {
