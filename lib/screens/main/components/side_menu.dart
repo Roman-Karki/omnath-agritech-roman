@@ -54,7 +54,7 @@ class _SideMenuState extends State<SideMenu> {
             title: "Stock",
             svgSrc: "assets/icons/menu_store.svg",
             press: () {
-              provider.switchtabs(0);
+              provider.switchtabs(0,context);
             },
           ),
           // DrawerListTile(
@@ -98,7 +98,7 @@ class _SideMenuState extends State<SideMenu> {
             title: "Settings",
             svgSrc: "assets/icons/menu_setting.svg",
             press: () {
-              provider.switchtabs(2);
+              provider.switchtabs(3,context);
             },
           ),
         ],

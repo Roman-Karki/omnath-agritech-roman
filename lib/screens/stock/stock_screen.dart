@@ -34,7 +34,7 @@ class _StockScreenState extends State<StockScreen> {
                 ),
               ),
               onPressed: () {
-                provider.switchtabs(1);
+                provider.switchtabs(1,context);
               },
               icon: const Icon(Icons.add),
               label: const Text("Add Product"),

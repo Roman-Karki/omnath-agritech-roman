@@ -1,6 +1,10 @@
+import 'dart:math';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'dart:io' show File;
 import '../../../constants.dart';
+import '../../main/providers/tabs_provider.dart';
 import '../validator.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:toggle_switch/toggle_switch.dart';
@@ -29,8 +33,6 @@ class _UpdateProductState extends State<UpdateProduct> {
   List<String> downloadUrl = <String>[];
   var _showContainer;
   bool uploading = false;
-
-  var _productId;
 
   addImage() {
     for (var bytes in photo!) {
@@ -71,20 +73,22 @@ class _UpdateProductState extends State<UpdateProduct> {
       uploading = true;
     });
     PickedFile? pickedFile;
-    String? productId = const Uuid().v4();
+    String? productId =  Provider.of<ProductValidation>(context, listen: true).productID.toString();
     for (int i = 0; i < itemImagesList.length; i++) {
       file = File(itemImagesList[i].path);
       pickedFile = PickedFile(file!.path);
 
-      await uploadImageToStorage(pickedFile, productId);
+      await uploadImageToStorage(pickedFile, productId, i);
     }
     return productId;
   }
 
-  uploadImageToStorage(PickedFile? pickedFile, String productId) async {
-    String? pId = const Uuid().v4();
+  uploadImageToStorage(PickedFile? pickedFile, String productId, i) async {
+    final validationService =
+        Provider.of<ProductValidation>(context, listen: false);
+    validationService.productid(productId);
     Reference reference =
-        FirebaseStorage.instance.ref().child('Items/$productId/product_$pId');
+        FirebaseStorage.instance.ref().child('Items/$productId/$i');
     await reference.putData(
       await pickedFile!.readAsBytes(),
       SettableMetadata(contentType: 'image/jpeg'),
@@ -96,8 +100,39 @@ class _UpdateProductState extends State<UpdateProduct> {
   @override
   void initState() {
     _showContainer = false;
+    companies();
 
     super.initState();
+    setState(() {
+      loading = true;
+    });
+  }
+
+  bool loading = true;
+  List<String>? companieslist;
+  companies() async {
+    var companies = await FirebaseFirestore.instance
+        .collection('Providers')
+        .doc('companies')
+        .get();
+    var data = companies.data() as Map;
+    print(data);
+    List s = data['companies'] as List;
+    print('s${s}');
+    List<String> l = [];
+    s.forEach(
+      (element) {
+        Map elements = element;
+        l.add(elements['companyEN']);
+      },
+    );
+    setState(() {
+      companieslist = l;
+      loading = false;
+      // final validationService =
+      //     Provider.of<ProductValidation>(context, listen: false);
+      // validationService.changecompany("${companieslist?.first}");
+    });
   }
 
   void change() {
@@ -105,6 +140,9 @@ class _UpdateProductState extends State<UpdateProduct> {
       _showContainer = _showContainer;
     });
   }
+
+  bool edit = true;
+  var currentID;
 
   void show() {
     setState(() {
@@ -118,24 +156,23 @@ class _UpdateProductState extends State<UpdateProduct> {
   Widget build(BuildContext context) {
     final validationService =
         Provider.of<ProductValidation>(context, listen: true);
-
+    Size size = MediaQuery.of(context).size;
     String dropdownvalue = 'Catagory';
     String dropdownvalueStatus = 'Status';
 
     // List of items in our dropdown menu
     var items = [
-      'One',
-      'Two',
-      'Three',
-      'Four',
-      'Five',
+      'Seeds',
+      'Fertilizers',
+      'Pesticides',
+      'Mulchfilms',
+      'Machinery',
+      'Plant nutrition',
+      'Organic products',
     ];
     var itemsStatus = [
-      '1',
-      '2',
-      '3',
-      '4',
-      '5',
+      'offline',
+      'both',
     ];
     return Container(
       padding: const EdgeInsets.all(defaultPadding),
@@ -302,6 +339,8 @@ class _UpdateProductState extends State<UpdateProduct> {
                               selector: (buildContext, counterProvider) =>
                                   counterProvider.productCategory,
                               builder: (context, data, child) {
+                                print(
+                                    "category${validationService.productCategory.value}");
                                 // print("object");
                                 return Padding(
                                   padding: const EdgeInsets.all(8.0),
@@ -349,30 +388,39 @@ class _UpdateProductState extends State<UpdateProduct> {
                                 builder: (context, data, child) {
                                   // print("object");
                                   return Padding(
+                                    key: Key(loading.toString()),
                                     padding: const EdgeInsets.all(8.0),
-                                    child: TextFormField(
-                                      initialValue:
-                                          validationService.company.value,
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return 'Please enter some text';
-                                        }
-                                        return null;
-                                      },
-                                      onChanged: (String value) {
-                                        validationService.changecompany(value);
-                                      },
+                                    child: DropdownButtonFormField(
+                                      value: validationService.company.value,
                                       decoration: InputDecoration(
                                           contentPadding:
                                               const EdgeInsets.symmetric(
                                                   vertical: 30.0,
                                                   horizontal: 10.0),
-                                          labelText: 'Company',
-                                          errorText:
-                                              validationService.company.error,
+                                          labelText: 'Companies',
                                           border: OutlineInputBorder(
                                               borderRadius:
                                                   BorderRadius.circular(10.0))),
+                                      // value: dropdownvalue,
+                                      icon: const Icon(
+                                          Icons.arrow_drop_down_circle_sharp),
+                                      // iconSize: 42,
+                                      items: companieslist?.map((items) {
+                                        return DropdownMenuItem(
+                                          value: items,
+                                          child: Text(items),
+                                        );
+                                      }).toList(),
+                                      validator: (value) {
+                                        if (value == null) {
+                                          return 'Please enter some text';
+                                        }
+                                        return null;
+                                      },
+                                      onChanged: (String? newValue) {
+                                        validationService
+                                            .changecompany(newValue!);
+                                      },
                                     ),
                                   );
                                 }),
@@ -473,6 +521,10 @@ class _UpdateProductState extends State<UpdateProduct> {
                                     ),
                                   ),
                                   onPressed: () {
+                                    final validationService =
+                                        Provider.of<ProductValidation>(context,
+                                            listen: false);
+                                    validationService.clearfields();
                                     show();
                                   },
                                   // onPressed: (!validationService.isValid)
@@ -544,6 +596,44 @@ class _UpdateProductState extends State<UpdateProduct> {
                                                                   fontSize: 14),
                                                         ),
                                                       ),
+                                                      Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .start,
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Expanded(
+                                                            child: Text(
+                                                              'OptionIndex: ${validationService.maps1!.values.toList()[index]['OptionIndex']}',
+                                                              style:
+                                                                  const TextStyle(
+                                                                      fontSize:
+                                                                          14),
+                                                            ),
+                                                          ),
+                                                          Expanded(
+                                                            child: Text(
+                                                              'Units: ${validationService.maps1!.values.toList()[index]['Units']}',
+                                                              style:
+                                                                  const TextStyle(
+                                                                      fontSize:
+                                                                          14),
+                                                            ),
+                                                          ),
+                                                          Expanded(
+                                                            child: Text(
+                                                              'Charges: ${validationService.maps1!.values.toList()[index]['Charges']}',
+                                                              style:
+                                                                  const TextStyle(
+                                                                      fontSize:
+                                                                          14),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+
                                                       // Expanded(
                                                       //   child: Text(
                                                       //     'Option Index: ${validationService.maps1!.values.toList()[index]['OptionIndex']}',
@@ -551,6 +641,26 @@ class _UpdateProductState extends State<UpdateProduct> {
                                                       //         fontSize: 14),
                                                       //   ),
                                                       // ),
+                                                      Expanded(
+                                                        child: IconButton(
+                                                          icon: const Icon(Icons
+                                                              .view_agenda),
+                                                          color: Colors.black,
+                                                          onPressed: () {
+                                                            setState(() {
+                                                              edit = true;
+                                                              currentID =
+                                                                  validationService
+                                                                          .maps1!
+                                                                          .values
+                                                                          .toList()[index]
+                                                                      [
+                                                                      'OptionIndex'];
+                                                            });
+                                                            show();
+                                                          },
+                                                        ),
+                                                      ),
                                                       Expanded(
                                                         child: IconButton(
                                                           icon: const Icon(Icons
@@ -578,7 +688,7 @@ class _UpdateProductState extends State<UpdateProduct> {
                               visible: _showContainer,
                               child: Column(
                                 children: [
-                                  const Option(),
+                                  Option(edit: edit),
                                   Selector<ProductValidation, bool>(
                                       selector:
                                           (buildContext, counterProvider) =>
@@ -600,7 +710,13 @@ class _UpdateProductState extends State<UpdateProduct> {
                                             ),
                                             onPressed: () {
                                               show();
-                                              validationService.submitOption();
+                                              if (edit == true) {
+                                                validationService.submitOption(
+                                                    ie: currentID);
+                                              } else {
+                                                validationService
+                                                    .submitOption();
+                                              }
                                             },
                                             // onPressed: (!validationService.isValid)
                                             //     ? null
@@ -619,99 +735,38 @@ class _UpdateProductState extends State<UpdateProduct> {
                     ],
                   ),
                   //
-
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Selector<ProductValidation, ValidationItem>(
-                          selector: (buildContext, counterProvider) =>
-                              counterProvider.searchKey,
-                          builder: (context, data, child) {
-                            // print("object");
-                            return Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: TextFormField(
-                                initialValue: validationService.searchKey.value,
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please enter some text';
-                                  }
-                                  return null;
-                                },
-                                onChanged: (String value) {
-                                  validationService.changesearchKey(value);
-                                },
-                                decoration: InputDecoration(
-                                    contentPadding: const EdgeInsets.symmetric(
-                                        vertical: 30.0, horizontal: 10.0),
-                                    labelText: 'Search Keys',
-                                    errorText:
-                                        validationService.searchKey.error,
-                                    border: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(10.0))),
+                  Container(
+                    width: size.width,
+                    height: size.height * 0.3,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: validationService.downloadUrl.length,
+                      itemBuilder: (context, index) {
+                        return Column(
+                          children: [
+                            Container(
+                              width: 100,
+                              height: size.height * 0.2,
+                              child: Image.network(
+                                validationService.downloadUrl[index],
+                                fit: BoxFit.fill,
                               ),
-                            );
-                          },
-                        ),
-                      ),
-                      Expanded(
-                        child: Selector<ProductValidation, ValidationItem>(
-                            selector: (buildContext, counterProvider) =>
-                                counterProvider.displayOffer,
-                            builder: (context, data, child) {
-                              // print("object");
-                              return Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 20.0, horizontal: 10.0),
-                                  child: Row(
-                                    children: [
-                                      Text("Display Offer   ",
-                                          style: TextStyle(
-                                              color: Colors.grey[400],
-                                              fontSize: 16)),
-                                      // ToggleButtons(
-                                      //   selectedColor: Colors.blue,
-                                      //   children: <Widget>[
-                                      //     Icon(Icons.check_box_outlined),
-                                      //     Icon(Icons.cancel_outlined),
-                                      //   ],
-                                      //   onPressed: (int index) {
-                                      //     // validationService
-                                      //     //     .changedisplayOffer(index);
-                                      //   },
-                                      //   isSelected: isSelected!,
-                                      // ),
-                                      ToggleSwitch(
-                                        minWidth:
-                                            MediaQuery.of(context).size.width *
-                                                0.08,
-                                        minHeight: 50.0,
-                                        fontSize: 16.0,
-                                        initialLabelIndex: 1,
-                                        activeBgColor: const [Colors.blue],
-                                        activeFgColor: Colors.white,
-                                        inactiveBgColor: secondaryColor,
-                                        inactiveFgColor: Colors.grey[400],
-                                        borderWidth: 2.0,
-                                        borderColor: const [Colors.grey],
-                                        totalSwitches: 2,
-                                        labels: const ['Yes', 'No'],
-                                        onToggle: (index) {
-                                          print(index);
-                                          validationService
-                                              .changedisplayOffer(index);
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            }),
-                      ),
-                    ],
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                print(validationService.downloadUrl[index]);
+                                validationService.changedownloadurl(
+                                  validationService.downloadUrl[index],
+                                );
+                              },
+                              child: Text(
+                                'Remove ',
+                              ),
+                            )
+                          ],
+                        );
+                      },
+                    ),
                   ),
                   Row(
                     children: [
@@ -775,7 +830,28 @@ class _UpdateProductState extends State<UpdateProduct> {
                               uploading ? null : await upload();
 
                               validationService.submitDownloadUrl(downloadUrl);
-                              validationService.submitData();
+                              validationService.submitData(context);
+                              Map map = {};
+                              List l = [];
+                              var provider = Provider.of<TabsProvider>(context,
+                                  listen: false);
+                              validationService.changeForm(
+                                '',
+                                '',
+                                '',
+                                '',
+                                '',
+                                '',
+                                '',
+                                '',
+                                '',
+                                '',
+                                '',
+                                '',
+                                map,
+                                l,
+                              );
+                              provider.switchtabs(0, context);
                             }
                           },
                           icon: const Icon(Icons.save_rounded),
@@ -794,16 +870,71 @@ class _UpdateProductState extends State<UpdateProduct> {
   }
 }
 
-class Option extends StatelessWidget {
-  const Option({Key? key}) : super(key: key);
+class Option extends StatefulWidget {
+  const Option({Key? key, this.edit}) : super(key: key);
+  final edit;
+
+  @override
+  State<Option> createState() => _OptionState();
+}
+
+class _OptionState extends State<Option> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
+    var itemsStatus = [
+      'Gram',
+      'Kgs',
+      'Liters',
+      'ML',
+    ];
+
     final validationService =
         Provider.of<ProductValidation>(context, listen: false);
+    Size size = MediaQuery.of(context).size;
     return Container(
+      width: size.width * 0.2,
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              height: 50,
+              width: 90,
+              child: DropdownButtonFormField(
+                value: widget.edit == true ? validationService.type.value : '',
+                decoration: InputDecoration(
+                    labelText: 'Type',
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0))),
+                // value: dropdownvalue,
+                icon: const Icon(Icons.arrow_drop_down_circle_sharp),
+                // iconSize: 42,
+                items: itemsStatus.map((String items) {
+                  return DropdownMenuItem(
+                    value: items,
+                    child: Text(items),
+                  );
+                }).toList(),
+                validator: (value) {
+                  if (value == null) {
+                    return 'Please enter some text';
+                  }
+                  return null;
+                },
+                onChanged: (String? newValue) {
+                  validationService.changetype(newValue!);
+                },
+              ),
+            ),
+          ),
           Selector<ProductValidation, ValidationItem>(
               selector: (buildContext, counterProvider) =>
                   counterProvider.quantity,
@@ -812,9 +943,10 @@ class Option extends StatelessWidget {
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextFormField(
+                    initialValue: widget.edit == true ? data.value : '',
                     keyboardType: TextInputType.number,
                     onChanged: (String value) {
-                      validationService.changequantity(int.parse(value));
+                      validationService.changequantity(value);
                     },
                     decoration: InputDecoration(
                         contentPadding: const EdgeInsets.symmetric(
@@ -828,13 +960,61 @@ class Option extends StatelessWidget {
               }),
           Selector<ProductValidation, ValidationItem>(
               selector: (buildContext, counterProvider) =>
-                  counterProvider.stock,
+                  counterProvider.quantity,
               builder: (context, data, child) {
                 // print("object");
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextFormField(
-                    onChanged: (String value) {
+                    initialValue: widget.edit == true ? data.value : '',
+                    keyboardType: TextInputType.number,
+                    onChanged: (value) {
+                      validationService.changeunits(value);
+                    },
+                    decoration: InputDecoration(
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 30.0, horizontal: 10.0),
+                        labelText: 'Units',
+                        errorText: validationService.quantity.error,
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0))),
+                  ),
+                );
+              }),
+          Selector<ProductValidation, ValidationItem>(
+              selector: (buildContext, counterProvider) =>
+                  counterProvider.quantity,
+              builder: (context, data, child) {
+                // print("object");
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextFormField(
+                    initialValue: widget.edit == true ? data.value : '',
+                    keyboardType: TextInputType.number,
+                    onChanged: (value) {
+                      validationService.changecharges(value);
+                    },
+                    decoration: InputDecoration(
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 30.0, horizontal: 10.0),
+                        labelText: 'Charges',
+                        errorText: validationService.quantity.error,
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0))),
+                  ),
+                );
+              }),
+          Selector<ProductValidation, ValidationItem>(
+              selector: (buildContext, counterProvider) =>
+                  counterProvider.stock,
+              builder: (context, data, child) {
+                // print("object");
+
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextFormField(
+                    initialValue: widget.edit == true ? data.value : '',
+                    onChanged: (value) {
                       validationService.changestock(value);
                     },
                     decoration: InputDecoration(
@@ -855,6 +1035,7 @@ class Option extends StatelessWidget {
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextFormField(
+                    initialValue: widget.edit == true ? data.value : '',
                     keyboardType: TextInputType.number,
                     onChanged: (String value) {
                       validationService.changeprice(int.parse(value));
@@ -877,6 +1058,7 @@ class Option extends StatelessWidget {
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextFormField(
+                    initialValue: widget.edit == true ? data.value : '',
                     onChanged: (String value) {
                       validationService.changediscount(value);
                     },

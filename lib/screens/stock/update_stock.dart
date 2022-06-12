@@ -34,7 +34,7 @@ class _UpdateStockState extends State<UpdateStock> {
                 ),
               ),
               onPressed: () {
-                provider.switchtabs(0);
+                provider.switchtabs(0,context);
               },
               icon: const Icon(Icons.keyboard_backspace_sharp),
               label: const Text("Show Product"),

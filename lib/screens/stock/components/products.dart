@@ -26,58 +26,57 @@ class _ProductsState extends State<Products> {
         borderRadius: BorderRadius.all(Radius.circular(10)),
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(
-          children: [
-            const Expanded(
-                child: Padding(
-              padding: EdgeInsets.all(8.0),
-              child: SearchField(),
-            )),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ElevatedButton.icon(
-                style: TextButton.styleFrom(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: defaultPadding * 1.5,
-                    vertical:
-                        defaultPadding / (Responsive.isMobile(context) ? 2 : 1),
-                  ),
-                ),
-                onPressed: () {
-                  // show();
-                },
-                icon: const Icon(Icons.filter_list_alt),
-                label: const Text("Filter By"),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ElevatedButton.icon(
-                style: TextButton.styleFrom(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: defaultPadding * 1.5,
-                    vertical:
-                        defaultPadding / (Responsive.isMobile(context) ? 2 : 1),
-                  ),
-                ),
-                onPressed: () {
-                  // show();
-                },
-                icon: const Icon(Icons.sort_outlined),
-                label: const Text("Sort By"),
-              ),
-            ),
-          ],
-        ),
+        // Row(
+        //   children: [
+        //     const Expanded(
+        //         child: Padding(
+        //       padding: EdgeInsets.all(8.0),
+        //       child: SearchField(),
+        //     )),
+        //     Padding(
+        //       padding: const EdgeInsets.all(8.0),
+        //       child: ElevatedButton.icon(
+        //         style: TextButton.styleFrom(
+        //           padding: EdgeInsets.symmetric(
+        //             horizontal: defaultPadding * 1.5,
+        //             vertical:
+        //                 defaultPadding / (Responsive.isMobile(context) ? 2 : 1),
+        //           ),
+        //         ),
+        //         onPressed: () {
+        //           // show();
+        //         },
+        //         icon: const Icon(Icons.filter_list_alt),
+        //         label: const Text("Filter By"),
+        //       ),
+        //     ),
+        //     Padding(
+        //       padding: const EdgeInsets.all(8.0),
+        //       child: ElevatedButton.icon(
+        //         style: TextButton.styleFrom(
+        //           padding: EdgeInsets.symmetric(
+        //             horizontal: defaultPadding * 1.5,
+        //             vertical:
+        //                 defaultPadding / (Responsive.isMobile(context) ? 2 : 1),
+        //           ),
+        //         ),
+        //         onPressed: () {
+        //           // show();
+        //         },
+        //         icon: const Icon(Icons.sort_outlined),
+        //         label: const Text("Sort By"),
+        //       ),
+        //     ),
+        //   ],
+        // ),
         const SizedBox(
           height: 20,
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: Container(
-            height: size.height * 0.25,
+            height: size.height * 0.8,
             child: PaginateFirestore(
-              physics: NeverScrollableScrollPhysics(),
               itemBuilder: (context, documentSnapshots, index) {
                 final data = documentSnapshots[index].data() as Map?;
                 return ProductCard(
@@ -89,9 +88,7 @@ class _ProductsState extends State<Products> {
                   .orderBy('nameEN'),
               itemBuilderType: PaginateBuilderType.gridView,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: (size.width * 0.5 / size.height * 0.25),
-              ),
+                  crossAxisCount: 3, childAspectRatio: 2),
               isLive: true,
             ),
           ),
@@ -114,7 +111,6 @@ class SearchField extends StatelessWidget {
         fillColor: bgColor,
         filled: true,
         border: OutlineInputBorder(
-          borderSide: BorderSide.none,
           borderRadius: const BorderRadius.all(Radius.circular(10)),
         ),
         suffixIcon: InkWell(
@@ -138,86 +134,126 @@ class ProductCard extends StatelessWidget {
   const ProductCard({Key? key, this.data}) : super(key: key);
   final data;
   firstImage() {
-    List images = data['images'];
-    // print(images.first.toString());
-    return images.first.toString();
+    if (data['images'] == null) {
+    } else {
+      List images = data['images'];
+      // print(images.first.toString());
+      return images.first.toString();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final validationService =
-        Provider.of<ProductValidation>(context, listen: false);
-    var provider = Provider.of<TabsProvider>(context);
     Size size = MediaQuery.of(context).size;
-    return Padding(
-      padding: EdgeInsets.symmetric(
-        horizontal: size.width * 0.02,
-        vertical: size.height * 0.01,
-      ),
-      child: GestureDetector(
-        onTap: () {
-          validationService.changeForm(
-              'data.reference.documentID}',
-              data['nameEN'],
-              data['nameHN'],
-              data['desEN'],
-              data['desHN'],
-              data['productCategory'],
-              data['status'],
-              data['company'],
-              data['gst'],
-              data['searchKey'],
-              data['displayOffer']);
-          provider.switchtabs(2);
-        },
-        child: Container(
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(6)),
-              color: Colors.grey.shade100),
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: size.width * 0.02,
-              vertical: size.height * 0.01,
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    children: [
-                      Text(
-                        data['nameEN'],
-                        style: TextStyle(fontSize: 22, color: Colors.black),
-                      ),
-                      Text(
-                        data['company'],
-                        style: TextStyle(fontSize: 15, color: Colors.black),
-                      ),
-                      Text(
-                        data['productCategory'],
-                        style: TextStyle(fontSize: 15, color: Colors.black),
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: Column(
-                    children: [
-                      Container(
-                        height: 200,
-                        child: OptimizedCacheImage(
-                          imageUrl: "${firstImage()}",
-                          placeholder: (context, url) =>
-                              CircularProgressIndicator(),
-                          errorWidget: (context, url, error) =>
-                              Icon(Icons.error),
+    return Container(
+      height: size.height * 0.2,
+      width: size.width * 0.4,
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: size.width * 0.01,
+          vertical: size.height * 0.01,
+        ),
+        child: GestureDetector(
+          onTap: () {
+            var validationService =
+                Provider.of<ProductValidation>(context, listen: false);
+            var provider = Provider.of<TabsProvider>(context, listen: false);
+            validationService.changeForm(
+              '${data['productID']}',
+              '${data['nameEN']}',
+              '${data['nameHN']}',
+              '${data['desEN']}',
+              '${data['desHN']}',
+              '${data['productCategory']}',
+              '${data['status']}',
+              '${data['company']}',
+              '${data['gst']}',
+              '${data['searchKey']}',
+              '${data['displayOffer']}',
+              '${data['company']}',
+              data['options'] as Map,
+              data['images'],
 
-                          //  Image.network("${firstImage()}"),
+            );
+            provider.switchtabs(2, context);
+          },
+          child: Container(
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(6)),
+                color: Colors.grey.shade100),
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: size.width * 0.02,
+                vertical: size.height * 0.01,
+              ),
+              child: Container(
+                width: size.width * 0.4,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      //Autotext
+                      child: Container(
+                        width: size.width * 0.12,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              data['nameEN'],
+                              style:
+                                  TextStyle(fontSize: 22, color: Colors.black),
+                            ),
+                            Text(
+                              data['company'],
+                              style:
+                                  TextStyle(fontSize: 15, color: Colors.black),
+                            ),
+                            Text(
+                              data['desEN'],
+                              style:
+                                  TextStyle(fontSize: 15, color: Colors.black),
+                            ),
+                            Text(
+                              data['productCategory'],
+                              style:
+                                  TextStyle(fontSize: 15, color: Colors.black),
+                            ),
+                          ],
                         ),
-                      )
-                    ],
-                  ),
-                )
-              ],
+                      ),
+                    ),
+                    SizedBox(width: 5),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(6),
+                            topRight: Radius.circular(6),
+                          ),
+                          child: Container(
+                            height: size.height * 0.2,
+                            width: size.width * 0.07,
+                            child: OptimizedCacheImage(
+                              imageUrl: "${firstImage()}",
+                              placeholder: (context, url) => Center(
+                                  child: Container(
+                                      height: 50,
+                                      width: 50,
+                                      child: CircularProgressIndicator())),
+                              errorWidget: (context, url, error) =>
+                                  Icon(Icons.error),
+                              fit: BoxFit.fill,
+                            ),
+                          ),
+                        )
+                      ],
+                    )
+                  ],
+                ),
+              ),
             ),
           ),
         ),

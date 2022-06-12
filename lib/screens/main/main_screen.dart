@@ -19,7 +19,7 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   indexclass ind = indexclass();
 
-  final tabs = [StockScreen(), AddStock(), UpdateStock(), DashboardScreen()];
+  final tabs = [StockScreen(), AddStock(), UpdateStock(), Settings()];
 
   @override
   Widget build(BuildContext context) {

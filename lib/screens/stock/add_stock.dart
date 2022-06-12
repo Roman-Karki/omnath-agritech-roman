@@ -1,5 +1,6 @@
 import 'package:omnath_agritech_web/responsive.dart';
 import 'package:flutter/material.dart';
+import 'package:omnath_agritech_web/screens/stock/validator.dart';
 import '../../constants.dart';
 import 'package:provider/provider.dart';
 import '../../screens/main/providers/tabs_provider.dart';
@@ -34,7 +35,27 @@ class _AddStockState extends State<AddStock> {
                 ),
               ),
               onPressed: () {
-                provider.switchtabs(0);
+                Map map = {};
+                List l = [];
+                final validationService =
+                    Provider.of<ProductValidation>(context, listen: false);
+                validationService.changeForm(
+                  '',
+                  '',
+                  '',
+                  '',
+                  '',
+                  '',
+                  '',
+                  '',
+                  '',
+                  '',
+                  '',
+                  '',
+                  map,
+                  l,
+                );
+                provider.switchtabs(0, context);
               },
               icon: const Icon(Icons.keyboard_backspace_sharp),
               label: const Text("Show Product"),

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -30,15 +32,22 @@ class ProductValidation with ChangeNotifier {
   ValidationItem _price = ValidationItem(null, null);
   ValidationItem _quantity = ValidationItem(null, null);
   ValidationItem _company = ValidationItem(null, null);
+  ValidationItem _productId = ValidationItem(null, null);
+  ValidationItem _type = ValidationItem(null, null);
+  ValidationItem _units = ValidationItem(null, null);
+  ValidationItem _charges = ValidationItem(null, null);
   ValidationItem _stock = ValidationItem(null, null);
   ValidationItem _discount = ValidationItem(null, null);
   ValidationItem _gst = ValidationItem(null, null);
   ValidationItem _searchKey = ValidationItem(null, null);
   ValidationItem _option = ValidationItem(null, null);
   ValidationItem _displayOffer = ValidationItem(null, null);
+  ValidationItem _images = ValidationItem(null, null);
 
 //Getters
   ValidationItem get docId => _docId;
+  ValidationItem get images => _images;
+
   ValidationItem get nameEN => _nameEN;
   ValidationItem get nameHN => _nameHN;
   ValidationItem get desEN => _desEN;
@@ -46,6 +55,10 @@ class ProductValidation with ChangeNotifier {
   ValidationItem get productCategory => _productCategory;
   ValidationItem get status => _status;
   ValidationItem get price => _price;
+  ValidationItem get productID => _productId;
+  ValidationItem get type => _type;
+  ValidationItem get charges => _charges;
+  ValidationItem get units => _units;
   ValidationItem get quantity => _quantity;
   ValidationItem get company => _company;
   ValidationItem get stock => _stock;
@@ -89,8 +102,35 @@ class ProductValidation with ChangeNotifier {
   }
 
 //Setters
-  void changeDocId(String value) {
-    _docId = ValidationItem(value, null);
+  // void changeDocId(String value) {
+  //   _docId = ValidationItem(value, null);
+  //   notifyListeners();
+  // }
+  void changetype(String value) {
+    if (value.toString().isNotEmpty) {
+      _type = ValidationItem(value.toString(), null);
+    } else {
+      _type = ValidationItem(null, "Select Valid type");
+    }
+    notifyListeners();
+  }
+
+  void changeunits(value) {
+    _units = ValidationItem(value, null);
+    notifyListeners();
+  }
+
+  void changecharges(value) {
+    _charges = ValidationItem(value, null);
+    notifyListeners();
+  }
+
+  void productid(String value) {
+    if (value.length >= 3) {
+      _productId = ValidationItem(value, null);
+    } else {
+      _productId = ValidationItem(null, "Must be at least 3 characters");
+    }
     notifyListeners();
   }
 
@@ -166,7 +206,7 @@ class ProductValidation with ChangeNotifier {
     notifyListeners();
   }
 
-  void changequantity(int value) {
+  void changequantity(String value) {
     if (value.toString().isNotEmpty) {
       _quantity = ValidationItem(value.toString(), null);
     } else {
@@ -231,24 +271,40 @@ class ProductValidation with ChangeNotifier {
 
   var i = 0;
   String? index;
-  List options = [];
-  final Map<String, Map<String, String>> map = {};
+  Map<String, Map<String, String>> map = {};
 
-  void submitOption() {
-    map[(i++).toString()] = {
+  void submitOption({ie}) {
+    var rng = Random();
+    var n = rng.nextInt(34433224);
+    String? optionID = n.toString();
+    map[ie != null ? ie : optionID] = {
       'Quantity': _quantity.value!,
       'Price': _price.value!,
       'Stock': _stock.value!,
+      'Charges': _charges.value.toString(),
+      'Units': _units.value.toString(),
       'Discount': _discount.value!,
-      'OptionIndex': (i.toString()),
+      'Type': _type.value!,
+      'OptionIndex': (ie != null ? ie : optionID),
     };
-
-    map.forEach((k, v) => options.add(MapItem(k, v)));
     print(map.toString());
     notifyListeners();
   }
 
-  List<String> downloadUrl = <String>[];
+  List? _listimages = [];
+  List get downloadUrl => _listimages!;
+  changedownloadurl(val) {
+    print(_listimages?.length);
+    print(downloadUrl.length);
+
+    _listimages?.remove(val);
+    print(_listimages?.length);
+    print(downloadUrl.length);
+
+    print(downloadUrl);
+    notifyListeners();
+  }
+
   void submitDownloadUrl(List<String> value) {
     downloadUrl.addAll(value);
     notifyListeners();
@@ -263,28 +319,42 @@ class ProductValidation with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> userSetup() async {
-    CollectionReference product =
-        FirebaseFirestore.instance.collection('Product');
-    // FirebaseAuth auth = FirebaseAuth.instance;
-    // String uid = auth.currentUser.uid.toString();
-    product.add({
-      'nameEN': nameEN.value,
-      'nameHN': nameHN.value,
-      'desEN': desEN.value,
-      'desHN': desHN.value,
-      'productCategory': productCategory.value,
-      'status': status.value,
-      'company': company.value,
-      'gst': gst.value,
-      'searchKey': searchKey.value,
-      'displayOffer': displayOffer.value,
-      'options': map,
-      'images': downloadUrl,
-    });
-    return;
+  void clearmap() {
+    map.clear();
+    notifyListeners();
   }
 
+  Future<void> userSetup(context) async {
+    print(downloadUrl);
+    try {
+      CollectionReference product =
+          FirebaseFirestore.instance.collection('Product');
+      // FirebaseAuth auth = FirebaseAuth.instance;
+      // String uid = auth.currentUser.uid.toString();
+      product.doc(productID.value.toString()).set({
+        'nameEN': nameEN.value.toString(),
+        'productID': _productId.value.toString(),
+        'nameHN': nameHN.value.toString(),
+        'desEN': desEN.value.toString(),
+        'desHN': desHN.value.toString(),
+        'created': FieldValue.serverTimestamp(),
+        'productCategory': productCategory.value.toString(),
+        'status': status.value.toString(),
+        'company': company.value.toString(),
+        'gst': gst.value.toString(),
+        'searchKey':
+            "${nameEN.value.toString().toLowerCase()}${nameHN.value.toString().toLowerCase()}${desEN.value.toString().toLowerCase()}${desHN.value.toString().toLowerCase()}",
+        'displayOffer': 'false',
+        'options': map,
+        'images': FieldValue.arrayUnion(downloadUrl.toList()),
+      }, SetOptions(merge: true));
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  List _l = [];
+  get l => _l;
   void changeForm(
       String id,
       String value1,
@@ -296,44 +366,89 @@ class ProductValidation with ChangeNotifier {
       String value7,
       String value8,
       String value9,
-      String value10) {
-    _docId = ValidationItem(id, null);
+      String value10,
+      String value11,
+      Map val12,
+      List images,
+      {reset}
+      // val13,
+      // val14,
+      // val15,
+      // val16,
+      // val17,
+      // val18,
+      ) {
+    print(map);
+    _productId = ValidationItem(id, null);
+    print(productID.value);
     _nameEN = ValidationItem(value1, null);
+    print(nameEN.value);
+
     _nameHN = ValidationItem(value2, null);
+    print(nameHN.value);
+
     _desEN = ValidationItem(value3, null);
+    print(desEN.value);
+
     _desHN = ValidationItem(value4, null);
+    print(desHN.value);
+
     _productCategory = ValidationItem(value5, null);
+    print(productCategory.value);
+
     _status = ValidationItem(value6, null);
+    print(status.value);
+
     _company = ValidationItem(value7, null);
+    print(company.value);
+
     _gst = ValidationItem(value8, null);
     _searchKey = ValidationItem(value9, null);
     _displayOffer = ValidationItem(value10, null);
+    _company = ValidationItem(value11, null);
 
+    _listimages = images;
+    print(downloadUrl);
+    if (reset == true) {
+      _quantity = ValidationItem('', null);
+      _units = ValidationItem('', null);
+      _charges = ValidationItem('', null);
+      _stock = ValidationItem('', null);
+      _price = ValidationItem('', null);
+      _discount = ValidationItem('', null);
+      _type = ValidationItem('', null);
+      clearmap();
+      notifyListeners();
+    } else {
+      val12.forEach((key, h) {
+        _quantity = ValidationItem(h['Quantity'], null);
+        _units = ValidationItem(h['Units'], null);
+        _charges = ValidationItem(h['Charges'], null);
+        _stock = ValidationItem(h['Stock'], null);
+        _price = ValidationItem(h['Price'], null);
+        _discount = ValidationItem(h['Discount'], null);
+        _type = ValidationItem(h['Type'], null);
+
+        notifyListeners();
+
+        submitOption(ie: h['OptionIndex']);
+      });
+    }
     notifyListeners();
   }
 
-  Future<void> update() async {
-    CollectionReference product =
-        FirebaseFirestore.instance.collection('Product');
-
-    product.doc('${_docId.value}').update({
-      'nameEN': nameEN.value,
-      'nameHN': nameHN.value,
-      'desEN': desEN.value,
-      'desHN': desHN.value,
-      'productCategory': productCategory.value,
-      'status': status.value,
-      'company': company.value,
-      'gst': gst.value,
-      'searchKey': searchKey.value,
-      'displayOffer': displayOffer.value,
-      'options': map,
-      'images': downloadUrl,
-    });
-    return;
+  void clearfields() {
+    _quantity = ValidationItem('', null);
+    _units = ValidationItem('', null);
+    _charges = ValidationItem('', null);
+    _stock = ValidationItem('', null);
+    _price = ValidationItem('', null);
+    _discount = ValidationItem('', null);
+    _type = ValidationItem('Kgs', null);
+    notifyListeners();
   }
 
-  void submitData() {
-    _docId.value == null ? userSetup() : update();
+  void submitData(context) {
+    userSetup(context);
   }
 }
