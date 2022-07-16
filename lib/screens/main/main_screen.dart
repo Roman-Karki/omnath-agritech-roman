@@ -5,6 +5,7 @@ import 'package:omnath_agritech_web/screens/stock/stock_screen.dart';
 import 'package:omnath_agritech_web/screens/stock/add_stock.dart';
 import 'package:omnath_agritech_web/screens/stock/update_stock.dart';
 import 'package:flutter/material.dart';
+import 'package:omnath_agritech_web/screens/video/video.dart';
 import 'package:provider/provider.dart';
 import './providers/tabs_provider.dart';
 import './index.dart';
@@ -19,7 +20,13 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   indexclass ind = indexclass();
 
-  final tabs = [StockScreen(), AddStock(), UpdateStock(), Settings()];
+  final tabs = [
+    StockScreen(),
+    AddStock(),
+    UpdateStock(),
+    Settings(),
+    Videopanel()
+  ];
 
   @override
   Widget build(BuildContext context) {

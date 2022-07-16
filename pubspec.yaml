@@ -44,10 +44,12 @@ dependencies:
   firebase_auth: ^3.3.16
   cloud_firestore: ^3.1.13
   firebase_storage:
+  auto_size_text: ^3.0.0                                                                      
   toggle_switch: ^2.0.1
   image_picker: ^0.8.5+3
   uuid: ^3.0.4
   optimized_cached_image: ^3.0.0
+  youtube_player_iframe: ^2.3.0
 
 
 dev_dependencies:

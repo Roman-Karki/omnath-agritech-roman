@@ -29,6 +29,8 @@ class ProductValidation with ChangeNotifier {
   ValidationItem _desHN = ValidationItem(null, null);
   ValidationItem _productCategory = ValidationItem(null, null);
   ValidationItem _status = ValidationItem(null, null);
+  ValidationItem _priceshow = ValidationItem(null, null);
+  ValidationItem _offershow = ValidationItem(null, null);
   ValidationItem _price = ValidationItem(null, null);
   ValidationItem _quantity = ValidationItem(null, null);
   ValidationItem _company = ValidationItem(null, null);
@@ -43,10 +45,14 @@ class ProductValidation with ChangeNotifier {
   ValidationItem _option = ValidationItem(null, null);
   ValidationItem _displayOffer = ValidationItem(null, null);
   ValidationItem _images = ValidationItem(null, null);
+  ValidationItem _technicalEN = ValidationItem(null, null);
+  ValidationItem _technicalHN = ValidationItem(null, null);
 
 //Getters
   ValidationItem get docId => _docId;
   ValidationItem get images => _images;
+  ValidationItem get technicalEN => _technicalEN;
+  ValidationItem get technicalHN => _technicalHN;
 
   ValidationItem get nameEN => _nameEN;
   ValidationItem get nameHN => _nameHN;
@@ -54,6 +60,8 @@ class ProductValidation with ChangeNotifier {
   ValidationItem get desHN => _desHN;
   ValidationItem get productCategory => _productCategory;
   ValidationItem get status => _status;
+  ValidationItem get priceshow => _priceshow;
+  ValidationItem get offershow => _offershow;
   ValidationItem get price => _price;
   ValidationItem get productID => _productId;
   ValidationItem get type => _type;
@@ -83,6 +91,8 @@ class ProductValidation with ChangeNotifier {
         _searchKey.value != null &&
         _option.value != null &&
         _displayOffer.value != null &&
+        _technicalEN.value != null &&
+        _technicalHN.value != null &&
         _quantity.value != null) {
       return true;
     } else {
@@ -130,6 +140,24 @@ class ProductValidation with ChangeNotifier {
       _productId = ValidationItem(value, null);
     } else {
       _productId = ValidationItem(null, "Must be at least 3 characters");
+    }
+    notifyListeners();
+  }
+
+  void changetechHN(String value) {
+    if (value.length >= 3) {
+      _technicalHN = ValidationItem(value, null);
+    } else {
+      _technicalHN = ValidationItem(null, "Must be at least 3 characters");
+    }
+    notifyListeners();
+  }
+
+  void changetechEN(String value) {
+    if (value.length >= 3) {
+      _technicalEN = ValidationItem(value, null);
+    } else {
+      _technicalEN = ValidationItem(null, "Must be at least 3 characters");
     }
     notifyListeners();
   }
@@ -193,6 +221,24 @@ class ProductValidation with ChangeNotifier {
       _status = ValidationItem(value.toString(), null);
     } else {
       _status = ValidationItem(null, "Select Valid Status");
+    }
+    notifyListeners();
+  }
+
+  void changepriceshow(String value) {
+    if (value.toString().isNotEmpty) {
+      _priceshow = ValidationItem(value.toString(), null);
+    } else {
+      _priceshow = ValidationItem(null, "Select Valid Status");
+    }
+    notifyListeners();
+  }
+
+  void changeoffershow(String value) {
+    if (value.toString().isNotEmpty) {
+      _offershow = ValidationItem(value.toString(), null);
+    } else {
+      _offershow = ValidationItem(null, "Select Valid Status");
     }
     notifyListeners();
   }
@@ -285,7 +331,7 @@ class ProductValidation with ChangeNotifier {
       'Units': _units.value.toString(),
       'Discount': _discount.value!,
       'Type': _type.value!,
-      'OptionIndex': (ie != null ? ie : optionID),
+      'OptionIndex': ie != null ? ie : optionID,
     };
     print(map.toString());
     notifyListeners();
@@ -314,9 +360,19 @@ class ProductValidation with ChangeNotifier {
     return map;
   }
 
-  void deleteOption(String value) {
+  void deleteOption(value) async {
     map.remove(value);
+    print(map.length);
+    print(map);
     notifyListeners();
+    await FirebaseFirestore.instance
+        .collection('Product')
+        .doc(productID.value.toString())
+        .set({'options': FieldValue.delete()}, SetOptions(merge: true));
+    await FirebaseFirestore.instance
+        .collection('Product')
+        .doc(productID.value.toString())
+        .set({'options': maps1}, SetOptions(merge: true));
   }
 
   void clearmap() {
@@ -325,36 +381,43 @@ class ProductValidation with ChangeNotifier {
   }
 
   Future<void> userSetup(context) async {
-    print(downloadUrl);
-    try {
-      CollectionReference product =
-          FirebaseFirestore.instance.collection('Product');
-      // FirebaseAuth auth = FirebaseAuth.instance;
-      // String uid = auth.currentUser.uid.toString();
-      product.doc(productID.value.toString()).set({
-        'nameEN': nameEN.value.toString(),
-        'productID': _productId.value.toString(),
-        'nameHN': nameHN.value.toString(),
-        'desEN': desEN.value.toString(),
-        'desHN': desHN.value.toString(),
-        'created': FieldValue.serverTimestamp(),
-        'productCategory': productCategory.value.toString(),
-        'status': status.value.toString(),
-        'company': company.value.toString(),
-        'gst': gst.value.toString(),
-        'searchKey':
-            "${nameEN.value.toString().toLowerCase()}${nameHN.value.toString().toLowerCase()}${desEN.value.toString().toLowerCase()}${desHN.value.toString().toLowerCase()}",
-        'displayOffer': 'false',
-        'options': map,
-        'images': FieldValue.arrayUnion(downloadUrl.toList()),
-      }, SetOptions(merge: true));
-    } catch (e) {
-      print(e);
-    }
+    if (downloadUrl.length > 0) {
+      print(map);
+      var documentID = productID.value.toString();
+      String name = nameEN.value.toString().trim();
+      try {
+        CollectionReference product =
+            FirebaseFirestore.instance.collection('Product');
+        // FirebaseAuth auth = FirebaseAuth.instance;
+        // String uid = auth.currentUser.uid.toString();
+        product.doc(documentID).set({
+          'nameEN': name,
+          'productID': _productId.value.toString(),
+          'nameHN': nameHN.value.toString(),
+          'desEN': desEN.value.toString(),
+          'technicalEN':
+              technicalEN.value != null ? technicalEN.value.toString() : '',
+          'technicalHN':
+              technicalHN.value != null ? technicalHN.value.toString() : '',
+          'desHN': desHN.value.toString(),
+          'created': FieldValue.serverTimestamp(),
+          'productCategory': productCategory.value.toString(),
+          'status': status.value.toString(),
+          'company': company.value.toString(),
+          'gst': gst.value.toString(),
+          'searchKey':
+              "${nameEN.value.toString().toLowerCase()}${nameHN.value.toString().toLowerCase()}${desEN.value.toString().toLowerCase()}${desHN.value.toString().toLowerCase()}",
+          'displayOffer': offershow.value,
+          'pricestatus': priceshow.value,
+          'options': maps1,
+          'images': downloadUrl
+        }, SetOptions(merge: true));
+      } catch (e) {
+        print(e);
+      }
+    } else {}
   }
 
-  List _l = [];
-  get l => _l;
   void changeForm(
       String id,
       String value1,
@@ -370,6 +433,10 @@ class ProductValidation with ChangeNotifier {
       String value11,
       Map val12,
       List images,
+      techHN,
+      techEN,
+      prices,
+      offer,
       {reset}
       // val13,
       // val14,
@@ -378,7 +445,9 @@ class ProductValidation with ChangeNotifier {
       // val17,
       // val18,
       ) {
-    print(map);
+    _priceshow = ValidationItem(prices, null);
+    _offershow = ValidationItem(offer == 'null' ? 'false' : offer, null);
+
     _productId = ValidationItem(id, null);
     print(productID.value);
     _nameEN = ValidationItem(value1, null);
@@ -393,6 +462,12 @@ class ProductValidation with ChangeNotifier {
     _desHN = ValidationItem(value4, null);
     print(desHN.value);
 
+    _technicalEN = ValidationItem(techEN == 'null' ? '' : techEN, null);
+    print(technicalEN.value);
+
+    _technicalHN = ValidationItem(techHN == 'null' ? '' : techHN, null);
+    print(technicalHN.value);
+
     _productCategory = ValidationItem(value5, null);
     print(productCategory.value);
 
@@ -406,8 +481,12 @@ class ProductValidation with ChangeNotifier {
     _searchKey = ValidationItem(value9, null);
     _displayOffer = ValidationItem(value10, null);
     _company = ValidationItem(value11, null);
-
-    _listimages = images;
+    if (reset == true) {
+      _listimages?.clear();
+    } else {
+      _listimages = images;
+    }
+    print(images);
     print(downloadUrl);
     if (reset == true) {
       _quantity = ValidationItem('', null);
@@ -416,24 +495,55 @@ class ProductValidation with ChangeNotifier {
       _stock = ValidationItem('', null);
       _price = ValidationItem('', null);
       _discount = ValidationItem('', null);
-      _type = ValidationItem('', null);
+      _type = ValidationItem('Gram', null);
       clearmap();
       notifyListeners();
     } else {
       val12.forEach((key, h) {
-        _quantity = ValidationItem(h['Quantity'], null);
-        _units = ValidationItem(h['Units'], null);
-        _charges = ValidationItem(h['Charges'], null);
-        _stock = ValidationItem(h['Stock'], null);
-        _price = ValidationItem(h['Price'], null);
-        _discount = ValidationItem(h['Discount'], null);
-        _type = ValidationItem(h['Type'], null);
+        map[h['OptionIndex']] = {
+          'Quantity': h['Quantity'],
+          'Price': h['Price'],
+          'Stock': h['Stock'],
+          'Charges': h['Charges'],
+          'Units': h['Units'],
+          'Discount': h['Discount'],
+          'Type': h['Type'],
+          'OptionIndex': h['OptionIndex'],
+        };
+        // // Map m = {
 
-        notifyListeners();
+        // // };
+        // _quantity = ValidationItem(h['Quantity'], null);
+        // _units = ValidationItem(h['Units'], null);
+        // _charges = ValidationItem(h['Charges'], null);
+        // _stock = ValidationItem(h['Stock'], null);
+        // _price = ValidationItem(h['Price'], null);
+        // _discount = ValidationItem(h['Discount'], null);
+        // _type = ValidationItem(h['Type'], null);
 
-        submitOption(ie: h['OptionIndex']);
+        // notifyListeners();
+
+        // submitOption(ie: h['OptionIndex']);
       });
     }
+    notifyListeners();
+  }
+
+  void update(
+      {@required q,
+      @required u,
+      @required c,
+      @required s,
+      @required p,
+      @required d,
+      @required t}) {
+    _quantity = ValidationItem(q, null);
+    _units = ValidationItem(u, null);
+    _charges = ValidationItem(c, null);
+    _stock = ValidationItem(s, null);
+    _price = ValidationItem(p, null);
+    _discount = ValidationItem(d, null);
+    _type = ValidationItem(t, null);
     notifyListeners();
   }
 
@@ -444,7 +554,7 @@ class ProductValidation with ChangeNotifier {
     _stock = ValidationItem('', null);
     _price = ValidationItem('', null);
     _discount = ValidationItem('', null);
-    _type = ValidationItem('Kgs', null);
+    _type = ValidationItem('Gram', null);
     notifyListeners();
   }
 

@@ -20,8 +20,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Admin Panel',
-    
+      title: 'Omnath Agritech',
       home: MultiProvider(
         providers: [
           ChangeNotifierProvider(

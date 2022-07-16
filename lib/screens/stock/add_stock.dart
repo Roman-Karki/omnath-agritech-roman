@@ -54,6 +54,10 @@ class _AddStockState extends State<AddStock> {
                   '',
                   map,
                   l,
+                  '',
+                  '',
+                  '',
+        '',
                 );
                 provider.switchtabs(0, context);
               },

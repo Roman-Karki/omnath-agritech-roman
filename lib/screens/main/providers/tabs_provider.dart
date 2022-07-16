@@ -31,7 +31,12 @@ class TabsProvider with ChangeNotifier {
         '',
         map,
         l,
-        reset: true
+        '',
+        '',
+        '',
+        '',
+        reset: true,
+        
       );
     }
     notifyListeners();

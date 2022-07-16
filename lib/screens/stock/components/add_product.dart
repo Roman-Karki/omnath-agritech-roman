@@ -121,9 +121,7 @@ class _AddProductState extends State<AddProduct> {
         .doc('companies')
         .get();
     var data = companies.data() as Map;
-    print(data);
     List s = data['companies'] as List;
-    print('s${s}');
     List<String> l = [];
     s.forEach(
       (element) {
@@ -176,6 +174,15 @@ class _AddProductState extends State<AddProduct> {
       'offline',
       'both',
     ];
+    var price = [
+      'Show',
+      'hide',
+    ];
+    var offer = [
+      'false',
+      'true',
+    ];
+    Size size = MediaQuery.of(context).size;
     return Container(
       padding: const EdgeInsets.all(defaultPadding),
       decoration: const BoxDecoration(
@@ -331,6 +338,76 @@ class _AddProductState extends State<AddProduct> {
                   Row(
                     children: [
                       Expanded(
+                        child: Selector<ProductValidation, ValidationItem>(
+                            selector: (buildContext, counterProvider) =>
+                                counterProvider.technicalEN,
+                            builder: (context, data, child) {
+                              // print("object");
+                              return Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: TextFormField(
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Please enter some text';
+                                    }
+                                    return null;
+                                  },
+                                  onChanged: (String value) {
+                                    validationService.changetechEN(value);
+                                  },
+                                  decoration: InputDecoration(
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                              vertical: 30.0, horizontal: 10.0),
+                                      labelText: 'Technical in English',
+                                      errorText: validationService.desEN.error,
+                                      border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10.0))),
+                                  maxLines: 5,
+                                  minLines: 3,
+                                ),
+                              );
+                            }),
+                      ),
+                      Expanded(
+                        child: Selector<ProductValidation, ValidationItem>(
+                            selector: (buildContext, counterProvider) =>
+                                counterProvider.technicalHN,
+                            builder: (context, data, child) {
+                              // print("object");
+                              return Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: TextFormField(
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Please enter some text';
+                                    }
+                                    return null;
+                                  },
+                                  onChanged: (String value) {
+                                    validationService.changetechHN(value);
+                                  },
+                                  decoration: InputDecoration(
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                              vertical: 30.0, horizontal: 10.0),
+                                      labelText: 'Technical in Hindi',
+                                      errorText: validationService.desHN.error,
+                                      border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10.0))),
+                                  maxLines: 5,
+                                  minLines: 3,
+                                ),
+                              );
+                            }),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
                         child: Column(
                           children: [
                             Selector<ProductValidation, ValidationItem>(
@@ -417,46 +494,146 @@ class _AddProductState extends State<AddProduct> {
                                     ),
                                   );
                                 }),
-                            Selector<ProductValidation, ValidationItem>(
-                              selector: (buildContext, counterProvider) =>
-                                  counterProvider.status,
-                              builder: (context, data, child) {
-                                // print("object");
-                                return Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: DropdownButtonFormField(
-                                    decoration: InputDecoration(
-                                        contentPadding:
-                                            const EdgeInsets.symmetric(
-                                                vertical: 30.0,
-                                                horizontal: 10.0),
-                                        labelText: 'Status',
-                                        border: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10.0))),
-                                    // value: dropdownvalue,
-                                    icon: const Icon(
-                                        Icons.arrow_drop_down_circle_sharp),
-                                    // iconSize: 42,
-                                    items: itemsStatus.map((String items) {
-                                      return DropdownMenuItem(
-                                        value: items,
-                                        child: Text(items),
-                                      );
-                                    }).toList(),
-                                    validator: (value) {
-                                      if (value == null) {
-                                        return 'Please enter some text';
-                                      }
-                                      return null;
-                                    },
-                                    onChanged: (String? newValue) {
-                                      validationService.changestatus(newValue!);
-                                    },
-                                  ),
-                                );
-                              },
-                            ),
+                            Row(children: [
+                              Container(
+                                width: size.width * 0.13,
+                                child:
+                                    Selector<ProductValidation, ValidationItem>(
+                                  selector: (buildContext, counterProvider) =>
+                                      counterProvider.status,
+                                  builder: (context, data, child) {
+                                    // print("object");
+                                    return Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: DropdownButtonFormField(
+                                        decoration: InputDecoration(
+                                            contentPadding:
+                                                const EdgeInsets.symmetric(
+                                                    vertical: 30.0,
+                                                    horizontal: 10.0),
+                                            labelText: 'Status',
+                                            border: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        10.0))),
+                                        // value: dropdownvalue,
+                                        icon: const Icon(
+                                            Icons.arrow_drop_down_circle_sharp),
+                                        // iconSize: 42,
+                                        items: itemsStatus.map((String items) {
+                                          return DropdownMenuItem(
+                                            value: items,
+                                            child: Text(items),
+                                          );
+                                        }).toList(),
+                                        validator: (value) {
+                                          if (value == null) {
+                                            return 'Please enter some text';
+                                          }
+                                          return null;
+                                        },
+                                        onChanged: (String? newValue) {
+                                          validationService
+                                              .changestatus(newValue!);
+                                        },
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                              Container(
+                                width: size.width * 0.13,
+                                child:
+                                    Selector<ProductValidation, ValidationItem>(
+                                  selector: (buildContext, counterProvider) =>
+                                      counterProvider.status,
+                                  builder: (context, data, child) {
+                                    // print("object");
+                                    return Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: DropdownButtonFormField(
+                                        decoration: InputDecoration(
+                                            contentPadding:
+                                                const EdgeInsets.symmetric(
+                                                    vertical: 30.0,
+                                                    horizontal: 10.0),
+                                            labelText: 'Price',
+                                            border: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        10.0))),
+                                        // value: dropdownvalue,
+                                        icon: const Icon(
+                                            Icons.arrow_drop_down_circle_sharp),
+                                        // iconSize: 42,
+                                        items: price.map((String items) {
+                                          return DropdownMenuItem(
+                                            value: items,
+                                            child: Text(items),
+                                          );
+                                        }).toList(),
+                                        validator: (value) {
+                                          if (value == null) {
+                                            return 'Please enter some text';
+                                          }
+                                          return null;
+                                        },
+                                        onChanged: (String? newValue) {
+                                          validationService
+                                              .changepriceshow(newValue!);
+                                        },
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                              Container(
+                                width: size.width * 0.13,
+                                child:
+                                    Selector<ProductValidation, ValidationItem>(
+                                  selector: (buildContext, counterProvider) =>
+                                      counterProvider.status,
+                                  builder: (context, data, child) {
+                                    // print("object");
+                                    return Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: DropdownButtonFormField(
+                                        decoration: InputDecoration(
+                                            contentPadding:
+                                                const EdgeInsets.symmetric(
+                                                    vertical: 30.0,
+                                                    horizontal: 10.0),
+                                            labelText: 'Offer',
+                                            border: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        10.0))),
+                                        // value: dropdownvalue,
+                                        icon: const Icon(
+                                            Icons.arrow_drop_down_circle_sharp),
+                                        // iconSize: 42,
+                                        items: offer.map((String items) {
+                                          return DropdownMenuItem(
+                                            value: items,
+                                            child: Text(items),
+                                          );
+                                        }).toList(),
+                                        validator: (value) {
+                                          if (value == null) {
+                                            return 'Please enter some text';
+                                          }
+                                          return null;
+                                        },
+                                        onChanged: (String? newValue) {
+                                          validationService
+                                              .changeoffershow(newValue!);
+                                        },
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ]),
                             Selector<ProductValidation, ValidationItem>(
                                 selector: (buildContext, counterProvider) =>
                                     counterProvider.gst,
@@ -561,7 +738,7 @@ class _AddProductState extends State<AddProduct> {
                                                       ),
                                                       Expanded(
                                                         child: Text(
-                                                          'Quantity: ${validationService.maps1!.values.toList()[index]['Quantity']}',
+                                                          'Quantity: ${validationService.maps1!.values.toList()[index]['Quantity']}${validationService.maps1!.values.toList()[index]['Type']}',
                                                           style:
                                                               const TextStyle(
                                                                   fontSize: 14),
@@ -725,7 +902,8 @@ class _AddProductState extends State<AddProduct> {
                               validationService.submitData(context);
                               Map map = {};
                               List l = [];
-                              var provider = Provider.of<TabsProvider>(context,listen: false);
+                              var provider = Provider.of<TabsProvider>(context,
+                                  listen: false);
                               validationService.changeForm(
                                 '',
                                 '',
@@ -741,6 +919,11 @@ class _AddProductState extends State<AddProduct> {
                                 '',
                                 map,
                                 l,
+                                '',
+                                '',
+                                '',
+                                '',
+                                reset: true,
                               );
                               provider.switchtabs(0, context);
                             }

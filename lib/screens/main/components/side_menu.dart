@@ -101,6 +101,13 @@ class _SideMenuState extends State<SideMenu> {
               provider.switchtabs(3,context);
             },
           ),
+          DrawerListTile(
+            title: "Video",
+            svgSrc: "assets/icons/menu_setting.svg",
+            press: () {
+              provider.switchtabs(4,context);
+            },
+          ),
         ],
       ),
     );

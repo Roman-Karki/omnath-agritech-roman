@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../constants.dart';
+import '../../components/auto_text.dart';
 import '../validator.dart';
 import 'package:provider/provider.dart';
 import 'package:omnath_agritech_web/responsive.dart';
@@ -146,7 +147,7 @@ class ProductCard extends StatelessWidget {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Container(
-      height: size.height * 0.2,
+      height: size.height * 0.3,
       width: size.width * 0.4,
       child: Padding(
         padding: EdgeInsets.symmetric(
@@ -173,7 +174,10 @@ class ProductCard extends StatelessWidget {
               '${data['company']}',
               data['options'] as Map,
               data['images'],
-
+              "${data['technicalHN']}",
+              "${data['technicalEN']}",
+              "${data['pricestatus']}",
+              "${data['displayOffer']}",
             );
             provider.switchtabs(2, context);
           },
@@ -196,29 +200,50 @@ class ProductCard extends StatelessWidget {
                       //Autotext
                       child: Container(
                         width: size.width * 0.12,
+                        height: size.height * 0.3,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              data['nameEN'],
+                            AutoText(
+                              showcolor: false,
+                              height: size.height * 0.04,
+                              maxline: 2,
                               style:
-                                  TextStyle(fontSize: 22, color: Colors.black),
+                                  TextStyle(fontSize: 18, color: Colors.black),
+                              text: '${data['nameEN']}',
+                              width: size.width * 0.65,
+                              centered: false,
                             ),
-                            Text(
-                              data['company'],
+                            AutoText(
+                              showcolor: false,
+                              height: size.height * 0.03,
+                              maxline: 2,
                               style:
-                                  TextStyle(fontSize: 15, color: Colors.black),
+                                  TextStyle(fontSize: 14, color: Colors.black),
+                              text: '${data['company']}',
+                              width: size.width * 0.65,
+                              centered: false,
                             ),
-                            Text(
-                              data['desEN'],
+                            AutoText(
+                              showcolor: false,
+                              height: size.height * 0.03,
+                              maxline: 2,
                               style:
-                                  TextStyle(fontSize: 15, color: Colors.black),
+                                  TextStyle(fontSize: 14, color: Colors.black),
+                              text: '${data['productCategory']}',
+                              width: size.width * 0.65,
+                              centered: false,
                             ),
-                            Text(
-                              data['productCategory'],
+                            AutoText(
+                              showcolor: false,
+                              height: size.height * 0.08,
+                              maxline: 3,
                               style:
-                                  TextStyle(fontSize: 15, color: Colors.black),
+                                  TextStyle(fontSize: 14, color: Colors.black),
+                              text: '${data['desEN']}',
+                              width: size.width * 0.65,
+                              centered: false,
                             ),
                           ],
                         ),
